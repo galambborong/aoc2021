@@ -2016,20 +2016,21 @@ let actualInput =
        7746
        7759 |]
 
-
-let countIncreases (input: int []) =
-    let mutable count: int = 0
-
-    for i in 1 .. (input.Length - 1) do
-        if input.[i] > input.[i - 1] then
-            do count <- count + 1
-
-    count
+let countIncreases (input: int[]) =
+    let rec counter index count =
+        match index with
+        | i when i <= input.Length - 1 -> 
+            match input.[index], input.[index - 1] with
+            | x, y when x > y -> counter (index + 1) (count + 1)
+            | _ -> counter (index + 1) count
+        | _ -> count
+    counter 1 0
+    
+// countIncreases exampleInput
 // countIncreases actualInput
 
 
 let makeThreeNumberGroups (input: int []) =
-
     let sum index = input.[index..index + 2] |> Array.sum
 
     seq {
@@ -2040,9 +2041,3 @@ let makeThreeNumberGroups (input: int []) =
     
 // countIncreases (makeThreeNumberGroups exampleInput)
 // countIncreases (makeThreeNumberGroups actualInput)
-
-
-
-
-
-// makeThreeNumberGroups exampleInput

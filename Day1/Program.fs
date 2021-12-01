@@ -1,16 +1,17 @@
 module DayOne
 
+
 let exampleInput =
-    [ 199
-      200
-      208
-      210
-      200
-      207
-      240
-      269
-      260
-      263 ]
+    [| 199
+       200
+       208
+       210
+       200
+       207
+       240
+       269
+       260
+       263 |]
 
 
 let actualInput =
@@ -2016,15 +2017,32 @@ let actualInput =
        7759 |]
 
 
-let countIncreases (input: int[]) =
+let countIncreases (input: int []) =
     let mutable count: int = 0
 
     for i in 1 .. (input.Length - 1) do
         if input.[i] > input.[i - 1] then
-            do
-                printfn $"ADDING"
-                count <- count + 1
+            do count <- count + 1
 
     count
-
 // countIncreases actualInput
+
+
+let makeThreeNumberGroups (input: int []) =
+
+    let sum index = input.[index..index + 2] |> Array.sum
+
+    seq {
+        for i in 0 .. (input.Length - 1) do
+            sum i
+    } |> Seq.toArray
+    
+    
+// countIncreases (makeThreeNumberGroups exampleInput)
+// countIncreases (makeThreeNumberGroups actualInput)
+
+
+
+
+
+// makeThreeNumberGroups exampleInput

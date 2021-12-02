@@ -6,9 +6,9 @@ let mapInstructionToPosition currentPosition instruction =
     let horizontal, depth, aim = currentPosition
 
     match instruction.direction with
-    | "forward" -> (horizontal + instruction.units, depth + (aim * instruction.units), aim)
-    | "up" -> (horizontal, depth, aim - instruction.units)
-    | "down" -> (horizontal, depth, aim + instruction.units)
+    | "forward" -> horizontal + instruction.units, depth + (aim * instruction.units), aim
+    | "up" -> horizontal, depth, aim - instruction.units
+    | "down" -> horizontal, depth, aim + instruction.units
     | _ -> failwith "This case should never occur"
 
 let multiplyFinalPosition (x, y, _) = x * y

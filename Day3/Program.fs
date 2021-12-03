@@ -27,6 +27,20 @@ let count1sAnd0sInColumn binaryInputs index =
     |> Seq.map (fun (binaryInput: string) -> binaryInput.[index])
     |> Seq.countBy oneOrZero
     |> Seq.toList
+    
+let rec filterByCharAtIndex (binaryInputs: seq<string>) index charToKeep =
+    match index with
+    | i when i <= (binaryInputs |> Seq.head |> String.length) -> //|> (+) -1
+        let filteredList = 
+            binaryInputs
+            |> Seq.filter (fun x -> x.[index] = charToKeep)
+        match filteredList |> Seq.length with
+        | len when len > 0 -> 
+            filterByCharAtIndex filteredList (index + 1) charToKeep
+        | _ -> binaryInputs
+    | _ -> binaryInputs
+    
+    // filterByCharAtIndex exampleInput 0 '1'
 
 let mostProminentBit binaryInputs (index: int) rateType =
     let count = count1sAnd0sInColumn binaryInputs index

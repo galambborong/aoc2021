@@ -1,34 +1,45 @@
 module DayThree
 
+open System
 open System.IO
 
-let exampleInput = @"c:/dev/aoc2021/day3/datainputs.txt"
+
+let exampleFile = @"c:/dev/aoc2021/day3/exampleInput.txt"
+let actualFile = @"c:/dev/aoc2021/day3/actualInput.txt"
 
 let fileInput file = seq { yield! File.ReadLines file }
 
+let exampleInput = fileInput exampleFile
+let actualInput = fileInput actualFile
+
+type Rate =
+    | Gamma
+    | Epsilon
+    
+let countNumberOf1sAnd0s char =
+        match char with
+        | '1' -> 1
+        | '0' -> 0
+        | _ -> failwith "This should never occur"
+    
 let countBits binaryInputs index = 
         binaryInputs
         |> Seq.map (fun (binaryInput: string) -> binaryInput.[index])
-        |> Seq.countBy (fun x ->
-            match x with
-            | '1' -> 1
-            | '0' -> 0
-            | _ -> failwith "This should never occur"
-            )
+        |> Seq.countBy countNumberOf1sAnd0s
         |> Seq.toList
 
-let countPredominantBitByIndex binaryInputs (index: int) isMax =
+let countPredominantBitByIndex binaryInputs (index: int) rateType =
     let count = countBits binaryInputs index
     
-    match isMax with
-    | true -> 
+    match rateType with
+    | Gamma -> 
         match count with
         | [(n, x); (nn, y)] when x > y ->
             n |> string
         | [(n, x); (nn, y)] when x < y ->
             nn |> string
         | _ -> failwith $"x = {fst count.[0]}; y = {fst count.[1]}"
-    | false ->
+    | Epsilon ->
         match count with
         | [(n, x); (nn, y)] when x > y ->
             nn |> string
@@ -37,15 +48,23 @@ let countPredominantBitByIndex binaryInputs (index: int) isMax =
         | _ -> failwith $"x = {fst count.[0]}; y = {fst count.[1]}"
     
     
-let possibleFinal (binaryInput: seq<string>) isMax =
-    seq { for i in 0..4 do
-              countPredominantBitByIndex binaryInput i isMax }
-    |> String.concat ""
+let produceNumberFromBinary (binaryInput: seq<string>) rateType =
+    let len =
+        binaryInput
+        |> Seq.head
+        |> String.length
+        |> (+) -1
+        
+    let binaryString =
+        seq { for i in 0..len do
+                  countPredominantBitByIndex binaryInput i rateType }
+        |> String.concat ""
+    
+    Convert.ToInt32(binaryString, 2)
     
     
-// countPredominantBitByIndex (fileInput exampleInput) 2
-// countPredominantBitByIndex (fileInput exampleInput) 1
-// countPredominantBitByIndex (fileInput exampleInput) 0
-
-// possibleFinal (fileInput exampleInput) false
-
+let calculatePowerConsumption example = produceNumberFromBinary example Gamma  * produceNumberFromBinary example Epsilon
+    
+    
+// calculatePowerConsumption exampleInput
+// calculatePowerConsumption actualInput

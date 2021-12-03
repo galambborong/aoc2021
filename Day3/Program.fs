@@ -15,6 +15,8 @@ let actualInput = fileInput actualFile
 type Rate =
     | Gamma
     | Epsilon
+    | Oxygen
+    | C02
 
 let oneOrZero char =
     match char with
@@ -27,46 +29,63 @@ let count1sAnd0sInColumn binaryInputs index =
     |> Seq.map (fun (binaryInput: string) -> binaryInput.[index])
     |> Seq.countBy oneOrZero
     |> Seq.toList
-    
-let rec filterByCharAtIndex (binaryInputs: seq<string>) index charToKeep =
-    match index with
-    | i when i <= (binaryInputs |> Seq.head |> String.length) -> //|> (+) -1
-        let filteredList = 
-            binaryInputs
-            |> Seq.filter (fun x -> x.[index] = charToKeep)
-        match filteredList |> Seq.length with
-        | len when len > 0 -> 
-            filterByCharAtIndex filteredList (index + 1) charToKeep
-        | _ -> binaryInputs
-    | _ -> binaryInputs
-    
-    // filterByCharAtIndex exampleInput 0 '1'
 
 let mostProminentBit binaryInputs (index: int) rateType =
     let count = count1sAnd0sInColumn binaryInputs index
 
     match rateType with
-    | Gamma ->
+    | Gamma
+    | Oxygen ->
         match count with
         | [ (n, x); (_, y) ] when x > y -> n |> string
         | [ (_, x); (nn, y) ] when x < y -> nn |> string
-        | _ -> failwith $"x = {fst count.[0]}; y = {fst count.[1]}"
-    | Epsilon ->
+        | _ ->
+            match rateType with
+            | Oxygen -> 1 |> string
+            | _ -> failwith $"{count.[0]}; {count.[1]}"
+    | Epsilon
+    | C02 ->
         match count with
         | [ (_, x); (nn, y) ] when x > y -> nn |> string
         | [ (n, x); (_, y) ] when x < y -> n |> string
-        | _ -> failwith $"x = {fst count.[0]}; y = {fst count.[1]}"
+        | _ ->
+            match rateType with
+            | C02 -> 0 |> string
+            | _ -> failwith $"{count.[0]}; {count.[1]}"
 
+let rec filterByCharAtIndex binaryInputs index rate =
+    let charToKeep =
+        mostProminentBit binaryInputs index rate |> char
+
+    match index with
+    | i when i < (binaryInputs |> Seq.head |> String.length) ->
+        let filteredList =
+            binaryInputs
+            |> Seq.filter (fun x -> x.[index] = charToKeep)
+
+        match filteredList |> Seq.length with
+        | len when len > 1 -> filterByCharAtIndex filteredList (index + 1) rate
+        | len when len = 1 -> filteredList
+        | _ -> failwith "todo"
+    | _ -> binaryInputs
 
 let produceNumberFromBinary (binaryInput: seq<string>) rateType =
     let len =
         binaryInput |> Seq.head |> String.length |> (+) -1
 
+    let inputsGreaterThanOne =
+        let length = binaryInput |> Seq.length
+        length > 1
+
     let binaryString =
-        seq {
-            for i in 0 .. len do
-                mostProminentBit binaryInput i rateType
-        }
+
+        match inputsGreaterThanOne with
+        | false -> binaryInput
+        | true ->
+            seq {
+                for i in 0 .. len do
+                    mostProminentBit binaryInput i rateType
+            }
         |> String.concat ""
 
     Convert.ToInt32(binaryString, 2)
@@ -76,6 +95,13 @@ let calculatePowerConsumption example =
     produceNumberFromBinary example Gamma
     * produceNumberFromBinary example Epsilon
 
+let calculateLifeSupport example =
+    (produceNumberFromBinary (filterByCharAtIndex example 0 Oxygen) Oxygen)
+    * (produceNumberFromBinary (filterByCharAtIndex example 0 C02) C02)
+
 
 // calculatePowerConsumption exampleInput
 // calculatePowerConsumption actualInput
+
+// calculateLifeSupport exampleInput
+// calculateLifeSupport actualInput

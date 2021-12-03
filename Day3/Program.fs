@@ -16,20 +16,20 @@ type Rate =
     | Gamma
     | Epsilon
 
-let countNumberOf1sAnd0s char =
+let oneOrZero char =
     match char with
     | '1' -> 1
     | '0' -> 0
     | _ -> failwith "This should never occur"
 
-let countBits binaryInputs index =
+let count1sAnd0sInColumn binaryInputs index =
     binaryInputs
     |> Seq.map (fun (binaryInput: string) -> binaryInput.[index])
-    |> Seq.countBy countNumberOf1sAnd0s
+    |> Seq.countBy oneOrZero
     |> Seq.toList
 
-let countPredominantBitByIndex binaryInputs (index: int) rateType =
-    let count = countBits binaryInputs index
+let mostProminentBit binaryInputs (index: int) rateType =
+    let count = count1sAnd0sInColumn binaryInputs index
 
     match rateType with
     | Gamma ->
@@ -51,7 +51,7 @@ let produceNumberFromBinary (binaryInput: seq<string>) rateType =
     let binaryString =
         seq {
             for i in 0 .. len do
-                countPredominantBitByIndex binaryInput i rateType
+                mostProminentBit binaryInput i rateType
         }
         |> String.concat ""
 

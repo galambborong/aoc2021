@@ -53,6 +53,11 @@ let checkRow row : string list option =
     | _ -> None
     
 //let generateColumn board : string list option =
+
+let checkBoard board =
+    let boardRow = checkRow (board |> List.map)
+    match boardRow with
+    | 
     
 
 let checkNumber bingoBoard x =
@@ -79,9 +84,18 @@ let playBingo (numbers: string list) boards =
                 (helperFunc newBoard)
                 |> List.map (List.filter (fun x -> x <> None))
                 |> List.concat
-
+                |> List.head
+                
+                
+            let getWinningBoard (boards: (string * bool) list list list) (winningNumbers: string list) =
+                boards
+                |> List.map (applyFunctionToNestedList fst)
+                |> List.map (List.filter (List. winningNumbers))
+                
+            let winningBoard = getWinningBoard boards (checkedRows.Value)
+                
             match checkedRows with
-            | [ Some list ] -> calculateVictory list numbers.[n]
+            | Some list -> calculateVictory list numbers.[n]
             | _ -> callNumber (n + 1) newBoard
         | _ -> failwith "This should not occur"
 

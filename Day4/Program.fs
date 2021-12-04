@@ -66,9 +66,11 @@ let totalBoardSum (board: (string * bool) list list) =
     |> List.map List.sum
     |> List.sum
 
-let checkBoard board =
+let checkBoard (board: (string * bool) list list) =
     printfn "Checking board"
-    let boardRow = board |> List.map checkRow
+//    let boardRow = board |> List.map checkRow
+    let boardRow = seq { for i in 0 .. (board.Length - 1) do board.[i] |> checkRow } |> Seq.toList |> List.filter (fun x -> x <> None)
+    
 
     printfn $"Matching boardRow {boardRow}"
     match boardRow with

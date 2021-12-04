@@ -21,7 +21,8 @@ let emptyStrings str = str <> ""
 
 let createCallNumberList file = file |> Seq.head |> splitLineAtComma 
 
-let callNumbers = createCallNumberList exampleInput
+let callNumbers = createCallNumberList actualInput
+//let callNumbers = createCallNumberList exampleInput
 
 let createBoards file =
     file
@@ -32,7 +33,8 @@ let createBoards file =
     |> List.map (splitLineAtSpace >> List.filter emptyStrings)
     |> List.chunkBySize 5
     
-let extractedBoards = createBoards exampleInput
+let extractedBoards = createBoards actualInput
+//let extractedBoards = createBoards exampleInput
 
 let addBoolToElement element = (element, false)
 
@@ -135,7 +137,6 @@ let checkNumber bingoBoard x =
 let countTrue (board: (string * bool) list list) =
     board
     |> List.map (List.filter (fun (_,y) -> y = false))
-//    |> List.map (List.map (fst >> int))
     |> List.map List.length
     |> List.sum
 
@@ -143,13 +144,13 @@ let playBingo (numbers: string list) boards =
     let finalCall = numbers.Length - 1
 
     let rec callNumber n boards =
+        printfn $"finalCall = {finalCall}  n = {n}  number = {numbers.[n]}"
         match n <= finalCall with
         | true ->
             let newBoard = checkNumber boards numbers.[n]
 
             let checkedBoards =
                 newBoard |> List.map checkBoard |> List.indexed |> List.filter (fun (_,y) -> y = 0)
-            printfn $"Before match:{checkedBoards}"
             
             match checkedBoards.Length with
             | 1 -> callNumber (n + 1) [newBoard.[fst checkedBoards.[0]]]
@@ -157,14 +158,9 @@ let playBingo (numbers: string list) boards =
                 match checkedBoards |> List.map snd with
                 | x when x |> List.contains 0
                      ->
-                         printfn $"Checked boards in recursive call: {checkedBoards}"
                          callNumber (n + 1) newBoard
                 | _ ->
-                    printfn $"Checked numbers = {checkedBoards}"
-                    let sumOfLowestTrue = newBoard |> List.map countTrue
                     let indexOfLowestTrues = newBoard |> List.map countTrue |> List.indexed |> List.min |> fst
-                    printfn $"Last called number = {numbers.[n]}"
-                    printfn $"Lowest trues = {sumOfLowestTrue}"
                     (checkBoard newBoard.[indexOfLowestTrues]) * (numbers.[n] |> int)
         | _ -> failwith "This should not occur"
 

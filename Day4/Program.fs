@@ -1,5 +1,6 @@
 module DayFour
 
+open System
 open System.IO
 
 let readData filePath = seq { yield! File.ReadLines filePath }
@@ -46,19 +47,48 @@ let matchNumber x (n: string, bool: bool) =
     | x when x <> n -> (n, bool)
     | _ -> failwith "Unhandled case"
 
+let exampleThing = 
+  [[("22", false); ("13", false); ("17", false); ("11", false); ("0", false)];
+   [("8", false); ("2", false); ("23", false); ("4", false); ("24", false)];
+   [("21", true); ("9", true); ("14", true); ("16", true); ("7", true)];
+   [("6", false); ("10", false); ("3", false); ("18", false); ("5", false)];
+   [("1", false); ("12", false); ("20", false); ("15", false); ("19", false)]]
 
-let checkRow row : string list option =
+let checkRow (row: (string * bool) list) : string list option =
     match row with
     | [ (_, true); (_, true); (_, true); (_, true); (_, true) ] -> Some(row |> List.map fst)
     | _ -> None
-    
+
 //let generateColumn board : string list option =
+let totalBoardSum (board: (string * bool) list list) =
+    board
+    |> List.map (List.map (fst >> int))
+    |> List.map List.sum
+    |> List.sum
 
 let checkBoard board =
-    let boardRow = checkRow (board |> List.map)
+    printfn "Checking board"
+    let boardRow = board |> List.map checkRow
+
+    printfn $"Matching boardRow {boardRow}"
     match boardRow with
-    | 
-    
+    | [ Some list ] ->
+        let boardSum = totalBoardSum board
+        printfn $"Board sum: {boardSum}"
+        let winningRow = list |> List.map int |> List.sum
+        printfn $"Winning row: {winningRow}"
+        totalBoardSum board - (list |> List.map int |> List.sum)
+        
+    //        (board
+//         |> List.map (List.map (fst >> int))
+//         |> List.map List.sum) -
+//        (list
+//         |> List.map int
+//         |> List.sum
+    | [ None ] -> 0
+    | _ -> 0
+
+// checkBoard exampleThing
 
 let checkNumber bingoBoard x =
     bingoBoard
@@ -68,7 +98,8 @@ let checkNumber bingoBoard x =
 let calculateVictory numberList callingNumber =
     numberList
     |> List.map int
-    |> List.sum |> (*) (int callingNumber)
+    |> List.sum
+    |> (*) (int callingNumber)
 
 let playBingo (numbers: string list) boards =
     let finalCall = numbers.Length - 1
@@ -85,15 +116,7 @@ let playBingo (numbers: string list) boards =
                 |> List.map (List.filter (fun x -> x <> None))
                 |> List.concat
                 |> List.head
-                
-                
-            let getWinningBoard (boards: (string * bool) list list list) (winningNumbers: string list) =
-                boards
-                |> List.map (applyFunctionToNestedList fst)
-                |> List.map (List.filter (List. winningNumbers))
-                
-            let winningBoard = getWinningBoard boards (checkedRows.Value)
-                
+
             match checkedRows with
             | Some list -> calculateVictory list numbers.[n]
             | _ -> callNumber (n + 1) newBoard

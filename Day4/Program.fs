@@ -4,7 +4,9 @@ open System.IO
 
 let readData filePath = seq { yield! File.ReadLines filePath }
 let exampleDataFilePath = @"./Day4/exampleInput.txt"
+let actualDataFilePath = @"./Day4/actualInput.txt"
 let exampleInput = readData exampleDataFilePath
+let actualInput = readData actualDataFilePath
 
 let splitLineAtComma =
     (fun (line: string) -> Seq.toList (line.Split ','))
@@ -18,10 +20,10 @@ let splitLineAtNewLineChar =
 let emptyStrings str = str <> ""
 
 let callNumbers =
-    exampleInput |> Seq.head |> splitLineAtComma
+    actualInput |> Seq.head |> splitLineAtComma
 
 let extractBoards =
-    exampleInput
+    actualInput
     |> Seq.tail
     |> Seq.map splitLineAtNewLineChar
     |> List.concat
@@ -47,12 +49,12 @@ let matchNumber x (n: string, bool: bool) =
     | _ -> failwith "Unhandled case"
 
 let exampleThing =
-    [ [ ("22", false)
+    [ [ ("22", true)
         ("13", true)
         ("17", false)
         ("11", false)
         ("0", false) ]
-      [ ("8", false)
+      [ ("8", true)
         ("2", false)
         ("23", false)
         ("4", false)
@@ -62,12 +64,12 @@ let exampleThing =
         ("14", true)
         ("16", true)
         ("7", true) ]
-      [ ("6", false)
+      [ ("6", true)
         ("10", false)
         ("3", false)
         ("18", false)
         ("5", false) ]
-      [ ("1", false)
+      [ ("1", true)
         ("12", true)
         ("20", false)
         ("15", false)
@@ -77,6 +79,15 @@ let checkRow (row: (string * bool) list) : string list option =
     match row with
     | [ (_, true); (_, true); (_, true); (_, true); (_, true) ] -> Some(row |> List.map fst)
     | _ -> None
+
+let makeColumns (board: (string * bool) list list) =
+    let length = 4
+    seq {
+        for i in 0..length do
+            board |> List.map (List.item i)
+    }
+    |> Seq.toList
+
 
 let totalBoardSum (board: (string * bool) list list) =
     board
@@ -100,13 +111,18 @@ let checkBoard (board: (string * bool) list list) =
         }
         |> Seq.toList
         |> List.filter (fun x -> x <> None)
+        
+    let boardColumn = 
+        seq {
+            for i in 0 .. (board.Length - 1) do
+                (makeColumns board).[i] |> checkRow
+        }
+        |> Seq.toList
+        |> List.filter (fun x -> x <> None)
 
-
-    match boardRow with
-    | [ Some _ ] ->
-        totalBoardSum board - unmarkedSum board
-
-    | [ None ] -> 0
+    match boardRow, boardColumn with
+    | [ Some _ ], _ -> totalBoardSum board - unmarkedSum board
+    | _, [Some _] -> totalBoardSum board - unmarkedSum board
     | _ -> 0
 
 let checkNumber bingoBoard x =

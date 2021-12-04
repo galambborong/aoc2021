@@ -48,17 +48,23 @@ let matchNumber x (n, bool) =
     | x when x <> n -> (n, bool)
     | _ -> failwith "Unhandled case"
 
-//let isBingo =
-//   let checkRows row =
-        
+
+let checkRow (row: (string * bool) list) : string list option =
+    match row with
+    | [(_, true);(_, true);(_, true);(_, true);(_, true)] -> Some (row |> List.map fst)
+    | _ -> None
+
+// checkRow [("1", true);("99", true);("27", true);("10", true);("2", true)]
+// checkRow [("1", false);("99", true);("27", true);("10", true);("2", true)]
 
 let checkNumber bingoBoard x =
     bingoBoard
     |> List.map (applyFunctionToNestedList (matchNumber x))
 
-let processCallNumbers numbers board =
+let processCallNumbers (numbers: string list) (board: (string * bool) list list list) =
     numbers
     |> List.scan checkNumber board
+    |> List.map (List.map (List.map checkRow))
 
 
 // checkNumber "2" bingoBoard

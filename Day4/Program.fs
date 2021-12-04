@@ -19,17 +19,20 @@ let splitLineAtNewLineChar =
 
 let emptyStrings str = str <> ""
 
-let callNumbers =
-    actualInput |> Seq.head |> splitLineAtComma
+let createCallNumberList file = file |> Seq.head |> splitLineAtComma 
 
-let extractBoards =
-    actualInput
+let callNumbers = createCallNumberList exampleInput
+
+let createBoards file =
+    file
     |> Seq.tail
     |> Seq.map splitLineAtNewLineChar
     |> List.concat
     |> List.filter emptyStrings
     |> List.map (splitLineAtSpace >> List.filter emptyStrings)
     |> List.chunkBySize 5
+    
+let extractedBoards = createBoards exampleInput
 
 let addBoolToElement element = (element, false)
 
@@ -40,7 +43,7 @@ let tuplifyBoards (gameBoards: string list list list) =
     gameBoards
     |> List.map (applyFunctionToNestedList addBoolToElement)
 
-let bingoBoard = extractBoards |> tuplifyBoards
+let bingoBoard = extractedBoards |> tuplifyBoards
 
 let matchNumber x (n: string, bool: bool) =
     match x with

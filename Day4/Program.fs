@@ -41,15 +41,14 @@ let tuplifyBoards (gameBoards: string list list list) =
 
 let bingoBoard = extractBoards |> tuplifyBoards
 
-let matchNumber x (n, bool) =
-    printfn $"x = {x}, tuple = ({n}, {bool})"
+let matchNumber x (n: string, bool: bool) =
     match x with
     | x when x = n -> (n, true)
     | x when x <> n -> (n, bool)
     | _ -> failwith "Unhandled case"
 
 
-let checkRow (row: (string * bool) list) : string list option =
+let checkRow row : string list option =
     match row with
     | [(_, true);(_, true);(_, true);(_, true);(_, true)] -> Some (row |> List.map fst)
     | _ -> None
@@ -61,12 +60,30 @@ let checkNumber bingoBoard x =
     bingoBoard
     |> List.map (applyFunctionToNestedList (matchNumber x))
 
-let processCallNumbers (numbers: string list) (board: (string * bool) list list list) =
-    numbers
-    |> List.scan checkNumber board
-    |> List.map (List.map (List.map checkRow))
+let playBingo (numbers: string list) boards =
+    let finalCall = numbers.Length - 1
+    
+    let helperFunc board =
+        board
+        |> List.map (List.map checkRow)
+    
+    let rec callNumber n boards =
+        match n <= finalCall with
+        | true ->
+            let newBoard = checkNumber boards numbers.[n]
+            let checkedRows = (helperFunc newBoard) |> List.map (List.filter (fun x -> x <> None)) |> List.concat
+            match checkedRows with
+            | [Some list] -> list
+            | _ -> callNumber (n + 1) newBoard
+        | _ -> failwith "This should not occur"
+        
+    callNumber 0 boards
+    
+//    numbers
+//    |> List.scan checkNumber boards
+//    |> List.map (List.map (List.map checkRow))
 
 
 // checkNumber "2" bingoBoard
 
-// processCallNumbers callNumbers bingoBoard
+// playBingo callNumbers bingoBoard

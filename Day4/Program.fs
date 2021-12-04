@@ -32,8 +32,7 @@ let extractBoards =
 let addBoolToElement element = (element, false)
 
 let applyFunctionToNestedList (func) (outerMostList: 'a list list) =
-    outerMostList
-    |> List.map (List.map func)
+    outerMostList |> List.map (List.map func)
 
 let tuplifyBoards (gameBoards: string list list list) =
     gameBoards
@@ -50,40 +49,42 @@ let matchNumber x (n: string, bool: bool) =
 
 let checkRow row : string list option =
     match row with
-    | [(_, true);(_, true);(_, true);(_, true);(_, true)] -> Some (row |> List.map fst)
+    | [ (_, true); (_, true); (_, true); (_, true); (_, true) ] -> Some(row |> List.map fst)
     | _ -> None
-
-// checkRow [("1", true);("99", true);("27", true);("10", true);("2", true)]
-// checkRow [("1", false);("99", true);("27", true);("10", true);("2", true)]
+    
+//let generateColumn board : string list option =
+    
 
 let checkNumber bingoBoard x =
     bingoBoard
     |> List.map (applyFunctionToNestedList (matchNumber x))
 
+
+let calculateVictory numberList callingNumber =
+    numberList
+    |> List.map int
+    |> List.sum |> (*) (int callingNumber)
+
 let playBingo (numbers: string list) boards =
     let finalCall = numbers.Length - 1
-    
-    let helperFunc board =
-        board
-        |> List.map (List.map checkRow)
-    
+
+    let helperFunc board = board |> List.map (List.map checkRow)
+
     let rec callNumber n boards =
         match n <= finalCall with
         | true ->
             let newBoard = checkNumber boards numbers.[n]
-            let checkedRows = (helperFunc newBoard) |> List.map (List.filter (fun x -> x <> None)) |> List.concat
+
+            let checkedRows =
+                (helperFunc newBoard)
+                |> List.map (List.filter (fun x -> x <> None))
+                |> List.concat
+
             match checkedRows with
-            | [Some list] -> list
+            | [ Some list ] -> calculateVictory list numbers.[n]
             | _ -> callNumber (n + 1) newBoard
         | _ -> failwith "This should not occur"
-        
+
     callNumber 0 boards
-    
-//    numbers
-//    |> List.scan checkNumber boards
-//    |> List.map (List.map (List.map checkRow))
-
-
-// checkNumber "2" bingoBoard
 
 // playBingo callNumbers bingoBoard

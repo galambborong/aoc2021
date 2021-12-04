@@ -20,7 +20,6 @@ let emptyStrings str = str <> ""
 let callNumbers =
     exampleInput |> Seq.head |> splitLineAtComma
 
-
 let extractBoards =
     exampleInput
     |> Seq.tail
@@ -49,13 +48,17 @@ let matchNumber x (n, bool) =
     | x when x <> n -> (n, bool)
     | _ -> failwith "Unhandled case"
 
+//let isBingo =
+//   let checkRows row =
+        
+
 let checkNumber bingoBoard x =
     bingoBoard
     |> List.map (applyFunctionToNestedList (matchNumber x))
 
 let processCallNumbers numbers board =
     numbers
-    |> List.fold checkNumber board
+    |> List.scan checkNumber board
 
 
 // checkNumber "2" bingoBoard

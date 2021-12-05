@@ -147,7 +147,8 @@ let playBingo (numbers: string list) (boards: (string*bool) list list list) =
     let rec callNumber n boards =
         printfn $"finalCall = {finalCall}  n = {n}  number = {numbers.[n]}"
         
-        printfn $"---{boards |> List.head |> List.head}"
+//        boards |> List.map countTrue |> List.iter (fun x -> printfn "%A" x)
+        printfn $"{boards |> List.map countTrue |> List.sum}"
         
         match n <= finalCall with
         | true ->

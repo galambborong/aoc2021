@@ -118,7 +118,6 @@ let playBingo (numbers: string list) boards =
                 }
                 |> Seq.toList
 
-
             match boardsStillInPlay.Length with
             | 1 -> callNumber (n + 1) [ latestBoards.[fst boardsStillInPlay.[0]] ]
             | 0 ->
@@ -131,11 +130,8 @@ let playBingo (numbers: string list) boards =
 
                 checkBoardForBingoSet latestBoards.[indexOfLowestTrues]
                 * (numbers.[n] |> int)
-            | _ ->
-                match boardsStillInPlay |> List.map snd with
-                | x when x |> List.contains 0 ->
-                    callNumber (n + 1) (filterBoardsWhichHaveReachedBingo boardsStillInPlay)
-                | _ -> failwith "Unhandled case"
+            | _ -> callNumber (n + 1) (filterBoardsWhichHaveReachedBingo boardsStillInPlay)
+
         | _ -> failwith "This should not occur"
 
     callNumber 0 boards

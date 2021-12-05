@@ -32,124 +32,109 @@ let extractedBoards = createBoards actualInput
 
 let addBoolToElement element = (element, false)
 
-let applyFunctionToNestedList (func) (outerMostList: 'a list list) =
+let applyFunctionToNestedList func (outerMostList: 'a list list) =
     outerMostList |> List.map (List.map func)
 
-let tuplifyBoards (gameBoards: string list list list) =
+let tuplifyBoards gameBoards =
     gameBoards
     |> List.map (applyFunctionToNestedList addBoolToElement)
 
 let bingoBoard = extractedBoards |> tuplifyBoards
 
-let matchNumber x (n: string, bool: bool) =
+let matchNumber x (n, bool) =
     match x with
     | x when x = n -> (n, true)
     | x when x <> n -> (n, bool)
     | _ -> failwith "Unhandled case"
 
-let checkRow (row: (string * bool) list) : string list option =
+let checkRow row =
     match row with
     | [ (_, true); (_, true); (_, true); (_, true); (_, true) ] -> Some(row |> List.map fst)
     | _ -> None
 
-let makeColumns (board: (string * bool) list list) =
-    let length = 4
-
+let makeColumns board =
     seq {
-        for i in 0 .. length do
+        for i in 0 .. 4 do
             board |> List.map (List.item i)
     }
     |> Seq.toList
 
 
-let totalBoardSum (board: (string * bool) list list) =
+let sumOfFullBoard board =
     board
     |> List.map (List.map (fst >> int))
     |> List.map List.sum
     |> List.sum
 
-let unmarkedSum (board: (string * bool) list list) =
+let sumOfUnmarkedNumbers board =
     board
     |> List.map (List.filter (fun (_, y) -> y = true))
-    |> List.map (List.map (fst >> int))
-    |> List.map List.sum
-    |> List.sum
+    |> sumOfFullBoard
 
-
-let checkBoard (board: (string * bool) list list) =
-    let boardRow =
-        seq {
-            for i in 0 .. (board.Length - 1) do
-                board.[i] |> checkRow
-        }
+let checkBoardForBingoSet board =
+    let rowsAndColumns (board: (string * bool) list list) =
+        seq { for i in 0..(board.Length - 1) do
+                  board.[i] |> checkRow }
         |> Seq.toList
         |> List.filter (fun x -> x <> None)
+        
+    let boardRows = rowsAndColumns board
+    let boardColumns = rowsAndColumns (makeColumns board)
 
-    let boardColumn =
-        seq {
-            for i in 0 .. (board.Length - 1) do
-                (makeColumns board).[i] |> checkRow
-        }
-        |> Seq.toList
-        |> List.filter (fun x -> x <> None)
-
-    match boardRow, boardColumn with
-    | [ Some _ ], _ -> totalBoardSum board - unmarkedSum board
-    | _, [ Some _ ] -> totalBoardSum board - unmarkedSum board
+    match boardRows, boardColumns with
+    | [ Some _ ], _ -> sumOfFullBoard board - sumOfUnmarkedNumbers board
+    | _, [ Some _ ] -> sumOfFullBoard board - sumOfUnmarkedNumbers board
     | _ -> 0
 
-let checkNumber bingoBoard x =
+let markMatchingNumbersTrue bingoBoard x =
     bingoBoard
     |> List.map (applyFunctionToNestedList (matchNumber x))
 
-let countTrue (board: (string * bool) list list) =
+let countNumberOfTruesOnBoard board =
     board
     |> List.map (List.filter (fun (_, y) -> y = false))
     |> List.map List.length
     |> List.sum
 
-let playBingo (numbers: string list) (boards: (string * bool) list list list) =
+let playBingo (numbers: string list) boards =
     let finalCall = numbers.Length - 1
 
     let rec callNumber n boards =
 
-        let ppp = boards |> List.map countTrue |> List.sum
-
         match n < finalCall with
         | true ->
-            let newBoard = checkNumber boards numbers.[n]
+            let latestBoards = markMatchingNumbersTrue boards numbers.[n]
 
-            let checkedBoards =
-                newBoard
-                |> List.map checkBoard
+            let boardsStillInPlay =
+                latestBoards
+                |> List.map checkBoardForBingoSet
                 |> List.indexed
                 |> List.filter (fun (_, y) -> y = 0)
 
-            let reducedBoards checkedBoards =
+            let filterBoardsWhichHaveReachedBingo checkedBoards =
                 seq {
                     for board in checkedBoards do
-                        newBoard.[fst board]
+                        latestBoards.[fst board]
                 }
                 |> Seq.toList
 
 
-            match checkedBoards.Length with
-            | 1 -> callNumber (n + 1) [ newBoard.[fst checkedBoards.[0]] ]
-            | k when k > 1 && n < finalCall ->
-                match checkedBoards |> List.map snd with
-                | x when x |> List.contains 0 -> callNumber (n + 1) (reducedBoards checkedBoards)
-                | _ -> failwith "Unhandled case"
+            match boardsStillInPlay.Length with
+            | 1 -> callNumber (n + 1) [ latestBoards.[fst boardsStillInPlay.[0]] ]
             | 0 ->
                 let indexOfLowestTrues =
-                    newBoard
-                    |> List.map countTrue
+                    latestBoards
+                    |> List.map countNumberOfTruesOnBoard
                     |> List.indexed
                     |> List.min
                     |> fst
 
-                (checkBoard newBoard.[indexOfLowestTrues])
+                checkBoardForBingoSet latestBoards.[indexOfLowestTrues]
                 * (numbers.[n] |> int)
-            | _ -> failwith "This should not occur"
+            | _ ->
+                match boardsStillInPlay |> List.map snd with
+                | x when x |> List.contains 0 -> callNumber (n + 1) (filterBoardsWhichHaveReachedBingo boardsStillInPlay)
+                | _ -> failwith "Unhandled case"
         | _ -> failwith "This should not occur"
 
     callNumber 0 boards

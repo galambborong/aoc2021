@@ -2,7 +2,7 @@ module DayFour
 
 open System.IO
 
-let readData filePath = seq { yield! File.ReadLines filePath }
+let readData filePath = seq { yield! File.ReadLines @"D:\Documents\Coding\aoc2021\Day4\actualInput.txt" }
 let exampleDataFilePath = @"./Day4/exampleInput.txt"
 let actualDataFilePath = @"./Day4/actualInput.txt"
 let exampleInput = readData exampleDataFilePath
@@ -21,8 +21,8 @@ let emptyStrings str = str <> ""
 
 let createCallNumberList file = file |> Seq.head |> splitLineAtComma
 
-//let callNumbers = createCallNumberList actualInput
-let callNumbers = createCallNumberList exampleInput
+let callNumbers = createCallNumberList actualInput
+//let callNumbers = createCallNumberList exampleInput
 
 let createBoards file =
     file
@@ -33,8 +33,8 @@ let createBoards file =
     |> List.map (splitLineAtSpace >> List.filter emptyStrings)
     |> List.chunkBySize 5
 
-//let extractedBoards = createBoards actualInput
-let extractedBoards = createBoards exampleInput
+let extractedBoards = createBoards actualInput
+//let extractedBoards = createBoards exampleInput
 
 let addBoolToElement element = (element, false)
 
@@ -141,12 +141,14 @@ let countTrue (board: (string * bool) list list) =
     |> List.map List.length
     |> List.sum
 
-let playBingo (numbers: string list) boards =
+let playBingo (numbers: string list) (boards: (string*bool) list list list) =
     let finalCall = numbers.Length - 1
 
     let rec callNumber n boards =
         printfn $"finalCall = {finalCall}  n = {n}  number = {numbers.[n]}"
-
+        
+        printfn $"---{boards |> List.head |> List.head}"
+        
         match n <= finalCall with
         | true ->
             let newBoard = checkNumber boards numbers.[n]
@@ -157,16 +159,16 @@ let playBingo (numbers: string list) boards =
                 |> List.indexed
                 |> List.filter (fun (_, y) -> y = 0)
                 
-            let indexToWatch = fst checkedBoards.[0]
 
             match checkedBoards.Length with
             | 1 ->
                 printfn "1 scenario"
-                callNumber (n + 1) [ newBoard.[indexToWatch] ]
-            | _ ->
+                callNumber (n + 1) [ newBoard.[fst checkedBoards.[0]] ]
+            | k when k > 1 ->
                 match checkedBoards |> List.map snd with
                 | x when x |> List.contains 0 -> callNumber (n + 1) newBoard
-                | _ ->
+                | _ -> failwith "MAYBE?"
+            | 0 ->
                     printfn "HERE??"
                     let indexOfLowestTrues =
                         newBoard
@@ -177,8 +179,9 @@ let playBingo (numbers: string list) boards =
 
                     (checkBoard newBoard.[indexOfLowestTrues])
                     * (numbers.[n] |> int)
+            | _ -> failwith "todo"
         | _ -> failwith "This should not occur"
 
     callNumber 0 boards
 
-// playBingo callNumbers bingoBoard
+playBingo callNumbers bingoBoard

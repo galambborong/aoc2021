@@ -3,9 +3,7 @@ module DayFour
 open System.IO
 
 let readData filePath = seq { yield! File.ReadLines filePath }
-let exampleDataFilePath = @"./Day4/exampleInput.txt"
 let actualDataFilePath = @"./Day4/actualInput.txt"
-let exampleInput = readData exampleDataFilePath
 let actualInput = readData actualDataFilePath
 
 let splitLineAt (char: char) =
@@ -28,7 +26,6 @@ let createBoards file =
     |> List.chunkBySize 5
 
 let extractedBoards = createBoards actualInput
-//let extractedBoards = createBoards exampleInput
 
 let addBoolToElement element = (element, false)
 
@@ -73,11 +70,13 @@ let sumOfUnmarkedNumbers board =
 
 let checkBoardForBingoSet board =
     let rowsAndColumns (board: (string * bool) list list) =
-        seq { for i in 0..(board.Length - 1) do
-                  board.[i] |> checkRow }
+        seq {
+            for i in 0 .. (board.Length - 1) do
+                board.[i] |> checkRow
+        }
         |> Seq.toList
         |> List.filter (fun x -> x <> None)
-        
+
     let boardRows = rowsAndColumns board
     let boardColumns = rowsAndColumns (makeColumns board)
 
@@ -103,7 +102,8 @@ let playBingo (numbers: string list) boards =
 
         match n < finalCall with
         | true ->
-            let latestBoards = markMatchingNumbersTrue boards numbers.[n]
+            let latestBoards =
+                markMatchingNumbersTrue boards numbers.[n]
 
             let boardsStillInPlay =
                 latestBoards
@@ -133,7 +133,8 @@ let playBingo (numbers: string list) boards =
                 * (numbers.[n] |> int)
             | _ ->
                 match boardsStillInPlay |> List.map snd with
-                | x when x |> List.contains 0 -> callNumber (n + 1) (filterBoardsWhichHaveReachedBingo boardsStillInPlay)
+                | x when x |> List.contains 0 ->
+                    callNumber (n + 1) (filterBoardsWhichHaveReachedBingo boardsStillInPlay)
                 | _ -> failwith "Unhandled case"
         | _ -> failwith "This should not occur"
 

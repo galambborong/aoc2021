@@ -19,7 +19,7 @@ let splitLineAtNewLineChar =
 
 let emptyStrings str = str <> ""
 
-let createCallNumberList file = file |> Seq.head |> splitLineAtComma 
+let createCallNumberList file = file |> Seq.head |> splitLineAtComma
 
 let callNumbers = createCallNumberList actualInput
 //let callNumbers = createCallNumberList exampleInput
@@ -32,7 +32,7 @@ let createBoards file =
     |> List.filter emptyStrings
     |> List.map (splitLineAtSpace >> List.filter emptyStrings)
     |> List.chunkBySize 5
-    
+
 let extractedBoards = createBoards actualInput
 //let extractedBoards = createBoards exampleInput
 
@@ -87,8 +87,9 @@ let checkRow (row: (string * bool) list) : string list option =
 
 let makeColumns (board: (string * bool) list list) =
     let length = 4
+
     seq {
-        for i in 0..length do
+        for i in 0 .. length do
             board |> List.map (List.item i)
     }
     |> Seq.toList
@@ -116,8 +117,8 @@ let checkBoard (board: (string * bool) list list) =
         }
         |> Seq.toList
         |> List.filter (fun x -> x <> None)
-        
-    let boardColumn = 
+
+    let boardColumn =
         seq {
             for i in 0 .. (board.Length - 1) do
                 (makeColumns board).[i] |> checkRow
@@ -127,16 +128,16 @@ let checkBoard (board: (string * bool) list list) =
 
     match boardRow, boardColumn with
     | [ Some _ ], _ -> totalBoardSum board - unmarkedSum board
-    | _, [Some _] -> totalBoardSum board - unmarkedSum board
+    | _, [ Some _ ] -> totalBoardSum board - unmarkedSum board
     | _ -> 0
 
 let checkNumber bingoBoard x =
     bingoBoard
     |> List.map (applyFunctionToNestedList (matchNumber x))
-    
+
 let countTrue (board: (string * bool) list list) =
     board
-    |> List.map (List.filter (fun (_,y) -> y = false))
+    |> List.map (List.filter (fun (_, y) -> y = false))
     |> List.map List.length
     |> List.sum
 
@@ -145,23 +146,32 @@ let playBingo (numbers: string list) boards =
 
     let rec callNumber n boards =
         printfn $"finalCall = {finalCall}  n = {n}  number = {numbers.[n]}"
+
         match n <= finalCall with
         | true ->
             let newBoard = checkNumber boards numbers.[n]
 
             let checkedBoards =
-                newBoard |> List.map checkBoard |> List.indexed |> List.filter (fun (_,y) -> y = 0)
-            
+                newBoard
+                |> List.map checkBoard
+                |> List.indexed
+                |> List.filter (fun (_, y) -> y = 0)
+
             match checkedBoards.Length with
-            | 1 -> callNumber (n + 1) [newBoard.[fst checkedBoards.[0]]]
+            | 1 -> callNumber (n + 1) [ newBoard.[fst checkedBoards.[0]] ]
             | _ ->
                 match checkedBoards |> List.map snd with
-                | x when x |> List.contains 0
-                     ->
-                         callNumber (n + 1) newBoard
+                | x when x |> List.contains 0 -> callNumber (n + 1) newBoard
                 | _ ->
-                    let indexOfLowestTrues = newBoard |> List.map countTrue |> List.indexed |> List.min |> fst
-                    (checkBoard newBoard.[indexOfLowestTrues]) * (numbers.[n] |> int)
+                    let indexOfLowestTrues =
+                        newBoard
+                        |> List.map countTrue
+                        |> List.indexed
+                        |> List.min
+                        |> fst
+
+                    (checkBoard newBoard.[indexOfLowestTrues])
+                    * (numbers.[n] |> int)
         | _ -> failwith "This should not occur"
 
     callNumber 0 boards

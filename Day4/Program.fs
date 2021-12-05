@@ -21,8 +21,8 @@ let emptyStrings str = str <> ""
 
 let createCallNumberList file = file |> Seq.head |> splitLineAtComma
 
-let callNumbers = createCallNumberList actualInput
-//let callNumbers = createCallNumberList exampleInput
+//let callNumbers = createCallNumberList actualInput
+let callNumbers = createCallNumberList exampleInput
 
 let createBoards file =
     file
@@ -33,8 +33,8 @@ let createBoards file =
     |> List.map (splitLineAtSpace >> List.filter emptyStrings)
     |> List.chunkBySize 5
 
-let extractedBoards = createBoards actualInput
-//let extractedBoards = createBoards exampleInput
+//let extractedBoards = createBoards actualInput
+let extractedBoards = createBoards exampleInput
 
 let addBoolToElement element = (element, false)
 
@@ -156,13 +156,18 @@ let playBingo (numbers: string list) boards =
                 |> List.map checkBoard
                 |> List.indexed
                 |> List.filter (fun (_, y) -> y = 0)
+                
+            let indexToWatch = fst checkedBoards.[0]
 
             match checkedBoards.Length with
-            | 1 -> callNumber (n + 1) [ newBoard.[fst checkedBoards.[0]] ]
+            | 1 ->
+                printfn "1 scenario"
+                callNumber (n + 1) [ newBoard.[indexToWatch] ]
             | _ ->
                 match checkedBoards |> List.map snd with
                 | x when x |> List.contains 0 -> callNumber (n + 1) newBoard
                 | _ ->
+                    printfn "HERE??"
                     let indexOfLowestTrues =
                         newBoard
                         |> List.map countTrue

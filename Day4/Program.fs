@@ -2,24 +2,18 @@ module DayFour
 
 open System.IO
 
-let readData filePath = seq { yield! File.ReadLines @"D:\Documents\Coding\aoc2021\Day4\actualInput.txt" }
+let readData filePath = seq { yield! File.ReadLines filePath }
 let exampleDataFilePath = @"./Day4/exampleInput.txt"
 let actualDataFilePath = @"./Day4/actualInput.txt"
 let exampleInput = readData exampleDataFilePath
 let actualInput = readData actualDataFilePath
 
-let splitLineAtComma =
-    (fun (line: string) -> Seq.toList (line.Split ','))
-
-let splitLineAtSpace =
-    (fun (line: string) -> Seq.toList (line.Split ' '))
-
-let splitLineAtNewLineChar =
-    (fun (line: string) -> Seq.toList (line.Split '\n'))
+let splitLineAt (char: char) =
+    (fun (line: string) -> Seq.toList (line.Split char))
 
 let emptyStrings str = str <> ""
 
-let createCallNumberList file = file |> Seq.head |> splitLineAtComma
+let createCallNumberList file = file |> Seq.head |> splitLineAt ','
 
 let callNumbers = createCallNumberList actualInput
 //let callNumbers = createCallNumberList exampleInput
@@ -27,10 +21,10 @@ let callNumbers = createCallNumberList actualInput
 let createBoards file =
     file
     |> Seq.tail
-    |> Seq.map splitLineAtNewLineChar
+    |> Seq.map (splitLineAt '\n')
     |> List.concat
     |> List.filter emptyStrings
-    |> List.map (splitLineAtSpace >> List.filter emptyStrings)
+    |> List.map (splitLineAt ' ' >> List.filter emptyStrings)
     |> List.chunkBySize 5
 
 let extractedBoards = createBoards actualInput
@@ -52,33 +46,6 @@ let matchNumber x (n: string, bool: bool) =
     | x when x = n -> (n, true)
     | x when x <> n -> (n, bool)
     | _ -> failwith "Unhandled case"
-
-let exampleThing =
-    [ [ ("22", true)
-        ("13", true)
-        ("17", false)
-        ("11", false)
-        ("0", false) ]
-      [ ("8", true)
-        ("2", false)
-        ("23", false)
-        ("4", false)
-        ("24", false) ]
-      [ ("21", true)
-        ("9", true)
-        ("14", true)
-        ("16", true)
-        ("7", true) ]
-      [ ("6", true)
-        ("10", false)
-        ("3", false)
-        ("18", false)
-        ("5", false) ]
-      [ ("1", true)
-        ("12", true)
-        ("20", false)
-        ("15", false)
-        ("19", false) ] ]
 
 let checkRow (row: (string * bool) list) : string list option =
     match row with
@@ -141,16 +108,14 @@ let countTrue (board: (string * bool) list list) =
     |> List.map List.length
     |> List.sum
 
-let playBingo (numbers: string list) (boards: (string*bool) list list list) =
+let playBingo (numbers: string list) (boards: (string * bool) list list list) =
     let finalCall = numbers.Length - 1
 
     let rec callNumber n boards =
-        printfn $"finalCall = {finalCall}  n = {n}  number = {numbers.[n]}"
-        
-//        boards |> List.map countTrue |> List.iter (fun x -> printfn "%A" x)
-        printfn $"{boards |> List.map countTrue |> List.sum}"
-        
-        match n <= finalCall with
+
+        let ppp = boards |> List.map countTrue |> List.sum
+
+        match n < finalCall with
         | true ->
             let newBoard = checkNumber boards numbers.[n]
 
@@ -159,30 +124,34 @@ let playBingo (numbers: string list) (boards: (string*bool) list list list) =
                 |> List.map checkBoard
                 |> List.indexed
                 |> List.filter (fun (_, y) -> y = 0)
-                
+
+            let reducedBoards checkedBoards =
+                seq {
+                    for board in checkedBoards do
+                        newBoard.[fst board]
+                }
+                |> Seq.toList
+
 
             match checkedBoards.Length with
-            | 1 ->
-                printfn "1 scenario"
-                callNumber (n + 1) [ newBoard.[fst checkedBoards.[0]] ]
-            | k when k > 1 ->
+            | 1 -> callNumber (n + 1) [ newBoard.[fst checkedBoards.[0]] ]
+            | k when k > 1 && n < finalCall ->
                 match checkedBoards |> List.map snd with
-                | x when x |> List.contains 0 -> callNumber (n + 1) newBoard
-                | _ -> failwith "MAYBE?"
+                | x when x |> List.contains 0 -> callNumber (n + 1) (reducedBoards checkedBoards)
+                | _ -> failwith "Unhandled case"
             | 0 ->
-                    printfn "HERE??"
-                    let indexOfLowestTrues =
-                        newBoard
-                        |> List.map countTrue
-                        |> List.indexed
-                        |> List.min
-                        |> fst
+                let indexOfLowestTrues =
+                    newBoard
+                    |> List.map countTrue
+                    |> List.indexed
+                    |> List.min
+                    |> fst
 
-                    (checkBoard newBoard.[indexOfLowestTrues])
-                    * (numbers.[n] |> int)
-            | _ -> failwith "todo"
+                (checkBoard newBoard.[indexOfLowestTrues])
+                * (numbers.[n] |> int)
+            | _ -> failwith "This should not occur"
         | _ -> failwith "This should not occur"
 
     callNumber 0 boards
 
-playBingo callNumbers bingoBoard
+// playBingo callNumbers bingoBoard

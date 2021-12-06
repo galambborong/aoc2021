@@ -4,7 +4,7 @@ open System.IO
 open Microsoft.FSharp.Core
 
 let buffer =
-    seq { yield! File.ReadLines @"./Day5/exampleInput.txt" }
+    seq { yield! File.ReadLines @"./Day5/exampleInput.txt" } |> Seq.toList
 
 type Coordinate = Coordinate of x: int * y: int
 
@@ -31,11 +31,16 @@ let turnIntoTuples (input: seq<string>) =
 
 let completeRanges (xs: int list, ys: int list) =
     let fullLength =
+        printfn $"xs {xs}   ys {ys}"
         match xs, ys with
         | [ x; x' ], [ y; y' ] when x = x' -> max y y' - min y y'
         | [ x; x' ], [ y; y' ] when y = y' -> max x x' - min x x'
         | [ x; x' ], [ y; _ ] 
             when x > y && x > x' -> x - max x' y
+        | [ x; x' ], [ y; y' ] 
+            when x > y && x > x' && x > y' -> x - x'
+        | [ x; x' ], [ y; y' ] 
+            when x' > y && x' > x -> x' - min y y'
         | _ -> failwith "fullLength todo"
 
     let createList (list: int list) : int list =
@@ -52,7 +57,7 @@ let completeRanges (xs: int list, ys: int list) =
 let parseBuffer () =
     let tuples =
         buffer
-        |> Seq.map (
+        |> List.map (
             turnLineIntoStarAndEndCoordinates
             >> turnIntoTuples
         )
@@ -61,12 +66,11 @@ let parseBuffer () =
         for coordinateSet in tuples do
             coordinateSet |> Seq.toList |> List.unzip
     }
-//    |> Seq.toList
-    |> Seq.map completeRanges
-//    |> List.concat
+    |> Seq.toList
+    |> List.map completeRanges
+//    |> Seq.concat
+    |> List.map (fun x -> printfn $"{x}")
     
-
-
 let linesToProcess = parseBuffer ()
 
 // linesToProcess

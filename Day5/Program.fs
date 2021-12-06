@@ -25,8 +25,8 @@ let turnIntoTuples (input: seq<string>) =
         |> Seq.collect (Seq.map int)
         |> Seq.toList
 
-    seq [ (intermediary.[0], intermediary.[1])
-          (intermediary.[2], intermediary.[3]) ]
+    seq [ Start (Coordinate (intermediary.[0], intermediary.[1]))
+          End (Coordinate (intermediary.[2], intermediary.[3])) ]
     
     
 // produce seq per start/end pair

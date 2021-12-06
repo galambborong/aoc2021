@@ -88,12 +88,12 @@ let applyToGrid (grid: int list list) (x, y) =
                     match j with
                     | j when j = x ->
                         grid.[y] |> List.updateAt x (incrementValue x)
-                    | _ -> 
-                        
-                        
-                    
-            
-            
-    }
+                    | _ -> grid.[y]
+            | _ -> grid.[i]
+    } |> Seq.toList
 
 // applyToGrid grid (0,9)
+
+let answer =
+    linesToProcess
+    |> List.fold applyToGrid grid

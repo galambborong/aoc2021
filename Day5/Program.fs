@@ -80,20 +80,15 @@ let grid =
 let incrementValue n = n + 1
 
 let applyToGrid (grid: int list list) (x, y) =
-    seq {
-        for i in 0..(dimension - 1) do
-            match i with
-            | i when i = y ->
-                for j in 0 .. dimension do
-                    match j with
-                    | j when j = x ->
-                        grid.[y] |> List.updateAt x (incrementValue x)
-                    | _ -> grid.[y]
-            | _ -> grid.[i]
-    } |> Seq.toList
+    let newY = grid.[y]
+                |> List.updateAt x (incrementValue grid.[y].[x])
+    
+    grid |> List.updateAt y newY
 
-// applyToGrid grid (0,9)
-
-let answer =
-    linesToProcess
+let answer lines =
+    lines
     |> List.fold applyToGrid grid
+    
+let example = [(0,9);(1,9);(2,9);(3,9);(4,9);(5,9)]
+
+// linesToProcess

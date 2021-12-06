@@ -27,10 +27,28 @@ let turnIntoTuples (input: seq<string>) =
 // (grid inits all 0s)
 
 let parseBuffer =
-    buffer
-    |> Seq.map (
-        turnLineIntoStarAndEndCoordinates
-        >> turnIntoTuples
-    )
+    let tuples =
+        buffer
+        |> Seq.map (
+            turnLineIntoStarAndEndCoordinates
+            >> turnIntoTuples
+        )
+        
+    seq {
+           for coordinateSet in tuples do
+               let seqStart = coordinateSet.[0]
+               let seqEnd = coordinateSet.[1]
+               let startX, startY = seqStart
+               let endX, endY = seqEnd
+               
+               let xs = [startX..endX]
+               let ys = [startY..endY]
+               
+               
+                
+                   
+               }
+    
+    
 
 // parseBuffer

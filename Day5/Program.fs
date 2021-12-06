@@ -70,7 +70,7 @@ let dimension =
     max xs ys + 1
 
 
-let mutable grid =
+let grid =
     seq {
         for _ in 0 .. (dimension - 1) do
             List.init dimension (fun _ -> 0)
@@ -79,6 +79,21 @@ let mutable grid =
 
 let incrementValue n = n + 1
 
-let applyToGrid =
-    linesToProcess
-    |> List.map (fun (x,y) -> incrementValue grid.[x].[y])
+let applyToGrid (grid: int list list) (x, y) =
+    seq {
+        for i in 0..(dimension - 1) do
+            match i with
+            | i when i = y ->
+                for j in 0 .. dimension do
+                    match j with
+                    | j when j = x ->
+                        grid.[y] |> List.updateAt x (incrementValue x)
+                    | _ -> 
+                        
+                        
+                    
+            
+            
+    }
+
+// applyToGrid grid (0,9)

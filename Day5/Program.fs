@@ -26,6 +26,32 @@ let turnIntoTuples (input: seq<string>) =
 // map coordinate to +1 on grid
 // (grid inits all 0s)
 
+let completeRanges (xs: int list, ys: int list) =
+    let createList (list: int list) :int list =
+        match list.[0], list.[1] with
+        | x1, x2 when x1 = x2 -> [x1]
+        | x1, x2 when x1 > x2 -> [ x2 .. x1 ]
+        | x1, x2 when x1 < x2 -> [x1..x2]
+        | _ -> failwith "todo"
+        
+    let xs' = createList xs
+    let ys' = createList ys
+    
+    let fullLength = max xs'.Length ys'.Length
+    
+    match xs'.Length, ys'.Length with
+    | xs'', _ when xs'' < fullLength -> List.init fullLength (fun _ -> xs')
+    | _, ys'' when ys'' < fullLength -> List.init fullLength (fun _ -> ys')
+    | xs'', _ when xs'' = fullLength -> xs'
+    | _, ys'' when ys'' = fullLength -> ys'
+    
+    ys' |> List.zip xs'
+    
+//    seq {
+//            
+//        
+//    }
+
 let parseBuffer =
     let tuples =
         buffer
@@ -36,18 +62,9 @@ let parseBuffer =
         
     seq {
            for coordinateSet in tuples do
-               let seqStart = coordinateSet.[0]
-               let seqEnd = coordinateSet.[1]
-               let startX, startY = seqStart
-               let endX, endY = seqEnd
-               
-               let xs = [startX..endX]
-               let ys = [startY..endY]
-               
-               
-                
-                   
+               coordinateSet |> Seq.toList |> List.unzip
                }
+    |> Seq.map completeRanges
     
     
 

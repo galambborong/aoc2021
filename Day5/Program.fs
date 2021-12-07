@@ -4,7 +4,7 @@ open System.IO
 open Microsoft.FSharp.Core
 
 let buffer =
-    seq { yield! File.ReadLines @"./Day5/exampleInput.txt" }
+    seq { yield! File.ReadLines @"./Day5/actualInput.txt" }
     |> Seq.toList
 
 type Coordinate = Coordinate of x: int * y: int
@@ -114,12 +114,5 @@ let answer lines =
     |> List.filter (fun x -> x <> [])
     |> List.concat
     |> List.length
-    
-let example = [(0, 9); (1, 9); (2, 9); (3, 9); (4, 9); (5, 9); (8, 0); (7, 1); (6, 2);
-   (5, 3); (4, 4); (3, 5); (2, 6); (1, 7); (0, 8); (9, 4); (8, 4); (7, 4);
-   (6, 4); (5, 4); (4, 4); (3, 4);]
 
-// linesToProcess
-
-// answer example
 // answer linesToProcess

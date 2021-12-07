@@ -79,9 +79,10 @@ let increment n = n + 1
 
 let applyToGrid (grid: int list list) (x, y) =
     let currentValue = grid.[y].[x]
+
     let yListWithUpdatedValue =
-        (grid.[y]
-        |> List.updateAt x (increment currentValue))
+        grid.[y]
+        |> List.updateAt x (increment currentValue)
 
     grid |> List.updateAt y yListWithUpdatedValue
 

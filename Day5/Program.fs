@@ -37,6 +37,7 @@ let completeRanges (xs: int list, ys: int list) =
         | _ -> failwith "fullLength todo"
 
     let createList (list: int list) : int list =
+        printfn $"{list}   "
         match list.[0], list.[1] with
         | x1, x2 when x1 = x2 -> List.init (fullLength + 1) (fun _ -> x1)
         | x1, x2 when x1 > x2 -> [ x1 .. -1 .. x2 ]
@@ -44,6 +45,17 @@ let completeRanges (xs: int list, ys: int list) =
         | _ -> failwith "createList todo"
 
     createList ys |> List.zip (createList xs)
+    
+let isDiagonal (coordinates: (int * int) list) =
+    let firstCoord = coordinates |> List.head
+    let lastCoord = coordinates |> List.last
+    
+    let firstX, firstY = firstCoord
+    let lastX, lastY = lastCoord
+    
+    (firstX > lastX && firstY < lastY) || (firstX > lastX && firstY > lastY) ||
+    (firstX < lastX && firstY > lastY) || (firstX < lastX && firstY < lastY)
+
 
 let linesToProcess =
     let tuples =
@@ -58,7 +70,9 @@ let linesToProcess =
             coordinateSet |> Seq.toList |> List.unzip
     }
     |> Seq.toList
-    |> List.collect completeRanges
+    |> List.map completeRanges
+    |> List.filter (fun x -> isDiagonal x <> true)
+    |> List.concat
 
 let dimension =
     let xs =
@@ -89,6 +103,11 @@ let answer lines =
     lines
     |> List.fold applyToGrid grid
     
-let example = [(0,9);(1,9);(2,9);(3,9);(4,9);(5,9)]
+let example = [(0, 9); (1, 9); (2, 9); (3, 9); (4, 9); (5, 9); (8, 0); (7, 1); (6, 2);
+   (5, 3); (4, 4); (3, 5); (2, 6); (1, 7); (0, 8); (9, 4); (8, 4); (7, 4);
+   (6, 4); (5, 4); (4, 4); (3, 4);]
 
 // linesToProcess
+
+// answer example
+// answer linesToProcess

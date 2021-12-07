@@ -100,8 +100,20 @@ let applyToGrid (grid: int list list) (x, y) =
     grid |> List.updateAt y newY
 
 let answer lines =
-    lines
-    |> List.fold applyToGrid grid
+    let finalGrid = 
+        lines
+        |> List.fold applyToGrid grid
+        
+    let max = 
+        finalGrid
+        |> List.map (List.max)
+        |> List.max
+    
+    finalGrid
+    |> List.map (List.filter (fun x -> x = max))
+    |> List.filter (fun x -> x <> [])
+    |> List.concat
+    |> List.length
     
 let example = [(0, 9); (1, 9); (2, 9); (3, 9); (4, 9); (5, 9); (8, 0); (7, 1); (6, 2);
    (5, 3); (4, 4); (3, 5); (2, 6); (1, 7); (0, 8); (9, 4); (8, 4); (7, 4);

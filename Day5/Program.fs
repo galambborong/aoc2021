@@ -7,8 +7,6 @@ let buffer =
     seq { yield! File.ReadLines @"./Day5/actualInput.txt" }
     |> Seq.toList
 
-type Coordinate = Coordinate of x: int * y: int
-
 let turnLineIntoStarAndEndCoordinates (str: string) =
     str.Split ' '
     |> Array.filter (fun x -> x <> "->")
@@ -34,6 +32,16 @@ let completeRanges (xs: int list, ys: int list) =
         | [ x; x' ], [ y; _ ] when x > y && x > x' -> x - max x' y
         | [ x; x' ], [ y; y' ] when x > y && x > x' && x > y' -> x - x'
         | [ x; x' ], [ y; y' ] when x' > y && x' > x -> x' - min y y'
+        | [x;x'], [y;y'] ->
+            let maxX = max x x'
+            let maxY = max y y'
+            let minX = min x x'
+            let minY = min y y'
+            
+            let maximum = max maxX maxY
+            let minimum = min minX minY
+            
+            maximum - minimum
         | _ -> failwith "fullLength todo"
 
     let createList (list: int list) : int list =
@@ -46,17 +54,6 @@ let completeRanges (xs: int list, ys: int list) =
 
     createList ys |> List.zip (createList xs)
     
-let isDiagonal (coordinates: (int * int) list) =
-    let firstCoord = coordinates |> List.head
-    let lastCoord = coordinates |> List.last
-    
-    let firstX, firstY = firstCoord
-    let lastX, lastY = lastCoord
-    
-    (firstX > lastX && firstY < lastY) || (firstX > lastX && firstY > lastY) ||
-    (firstX < lastX && firstY > lastY) || (firstX < lastX && firstY < lastY)
-
-
 let linesToProcess =
     let tuples =
         buffer
@@ -64,12 +61,6 @@ let linesToProcess =
             turnLineIntoStarAndEndCoordinates
             >> turnIntoTuples
         )
-        |> List.filter (fun (coordinateSet: seq<int * int>) ->
-            let start = coordinateSet |> Seq.head
-            let ends = coordinateSet |> Seq.last
-            let x1,y1 = start
-            let x2, y2 = ends
-            x1 = x2 || y1 = y2)
 
     seq {
         for coordinateSet in tuples do
@@ -77,7 +68,6 @@ let linesToProcess =
     }
     |> Seq.toList
     |> List.map completeRanges
-//    |> List.filter (fun x -> isDiagonal x <> true)
     |> List.concat
 
 let dimension =

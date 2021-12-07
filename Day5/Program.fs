@@ -64,6 +64,12 @@ let linesToProcess =
             turnLineIntoStarAndEndCoordinates
             >> turnIntoTuples
         )
+        |> List.filter (fun (coordinateSet: seq<int * int>) ->
+            let start = coordinateSet |> Seq.head
+            let ends = coordinateSet |> Seq.last
+            let x1,y1 = start
+            let x2, y2 = ends
+            x1 = x2 || y1 = y2)
 
     seq {
         for coordinateSet in tuples do
@@ -71,7 +77,7 @@ let linesToProcess =
     }
     |> Seq.toList
     |> List.map completeRanges
-    |> List.filter (fun x -> isDiagonal x <> true)
+//    |> List.filter (fun x -> isDiagonal x <> true)
     |> List.concat
 
 let dimension =
@@ -100,17 +106,15 @@ let applyToGrid (grid: int list list) (x, y) =
     grid |> List.updateAt y newY
 
 let answer lines =
+    printfn $"{grid.Head.Length}"
     let finalGrid = 
         lines
         |> List.fold applyToGrid grid
         
-    let max = 
-        finalGrid
-        |> List.map (List.max)
-        |> List.max
-    
+    printfn $"{finalGrid.Head.Length}"
+        
     finalGrid
-    |> List.map (List.filter (fun x -> x = max))
+    |> List.map (List.filter (fun x -> x >= 2))
     |> List.filter (fun x -> x <> [])
     |> List.concat
     |> List.length

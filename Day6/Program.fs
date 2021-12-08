@@ -21,9 +21,9 @@ let buffer file =
 
 let state (internalTimer,age) =
     match (internalTimer, age) with
-    | 0, Old -> 6
-    | 0, New -> 8
-    | _ -> internalTimer - 1
+    | 0, Old -> 6, Old
+    | 0, New -> 8, Old
+    | _, age -> internalTimer - 1, age
     
 let growth x =
     match x with
@@ -32,11 +32,12 @@ let growth x =
 
 let lanternFishExponentialGrowth initialState =
     let rec stateManager currentState counter =
+        printfn $"counter: {counter}"
+        let newState = currentState |> List.map state
         match counter with
         | n when n > 0 ->
-            let newState = currentState |> List.map state
             stateManager newState (counter - 1)
-        | _ -> currentState
+        | _ -> currentState |> List.map state |> List.map fst
         
     stateManager initialState 80
         

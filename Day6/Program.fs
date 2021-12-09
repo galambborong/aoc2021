@@ -16,29 +16,28 @@ let buffer file =
     |> List.filter Char.IsNumber
     |> List.map (string >> int >> ageTracker)
 
-let state (internalTimer,age) =
-    match (internalTimer, age) with
-    | 0, Old -> 6, Old
-    | 0, New -> 8, Old
-    | _, age -> internalTimer - 1, age
+let state (internalTimer: int,age: Age) =
+    match internalTimer with
+    | 0 -> 6, Old
+    | _ -> (internalTimer - 1),age
     
 let growth currentState newState =
-    match currentState, newState with
-    | currentState, _ when currentState |> List.contains (0, Old) -> newState |> List.append [(8, New)]
-    | _ -> newState
+    let zeros = currentState |> List.filter (fun (x: int,_) -> x = 0)
+    
+    newState @ List.init zeros.Length (fun _ -> (8,New))
 
 let lanternFishExponentialGrowth initialState =
     let rec stateManager currentState counter =
-        printfn $"counter: {counter}"
+        printfn $"{counter}"
         let newState = currentState |> List.map state
         let newNewState = growth currentState newState
         match counter with
         | n when n > 0 ->
             stateManager newNewState (counter - 1)
-        | _ -> currentState |> List.map state |> List.map fst
+        | _ -> newNewState |> List.map fst |> List.length
         
-    stateManager initialState 80
+    stateManager initialState 255
         
         
-    
+// lanternFishExponentialGrowth (buffer @"./Day6/actualInput.txt")
 // lanternFishExponentialGrowth (buffer @"./Day6/exampleInput.txt")

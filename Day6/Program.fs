@@ -28,13 +28,11 @@ let growth currentState newState =
 
 let lanternFishExponentialGrowth initialState =
     let rec stateManager currentState counter =
-        printfn $"{counter}"
-        let newState = currentState |> List.map state
-        let newNewState = growth currentState newState
+        let newState = growth currentState (currentState |> List.map state)
         match counter with
         | n when n > 0 ->
-            stateManager newNewState (counter - 1)
-        | _ -> newNewState |> List.map fst |> List.length
+            stateManager newState (counter - 1)
+        | _ -> newState |> List.length
         
     stateManager initialState 255
         

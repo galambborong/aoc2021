@@ -15,13 +15,7 @@ let countIncreases (input: int []) =
 // countIncreases actualInput
 
 let sumSlidingWindows (input: int []) =
-    let sum index = input.[index..index + 2] |> Array.sum
-
-    seq {
-        for i in 0 .. (input.Length - 1) do
-            sum i
-    }
-    |> Seq.toArray
+    input |> Array.windowed 3 |> Array.map Array.sum
 
 
 // countIncreases (sumSlidingWindows exampleInput)

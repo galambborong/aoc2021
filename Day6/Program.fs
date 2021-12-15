@@ -3,31 +3,27 @@ module DaySix
 open System
 open System.IO
 
-type Age =
-    | New
-    | Old
 
-let ageTracker i = (i, Old)
 
 let buffer file =
     seq { yield! File.ReadLines file }
     |> Seq.head
     |> Seq.toArray
     |> Array.filter Char.IsNumber
-    |> Array.map (string >> int >> ageTracker)
+    |> Array.map (string >> int)
 
-let state (internalTimer: int,age: Age) =
+let state (internalTimer: int) =
     match internalTimer with
-    | 0 -> 6, Old
-    | _ -> (internalTimer - 1),age
+    | 0 -> 6
+    | _ -> internalTimer - 1
     
 
 let lanternFishExponentialGrowth n =
     let mutable stateTrack = buffer @"./Day6/exampleInput.txt"
     
-    let growth currentState (newState: (int * Age)[]) =
-        let zeros = currentState |> Array.filter (fun (x: int,_) -> x = 0)
-        newState |> Array.append (Array.init zeros.Length (fun _ -> (8,New)))
+    let growth currentState (newState: int []) =
+        let zeros = currentState |> Array.filter (fun (x: int) -> x = 0)
+        newState |> Array.append (Array.init zeros.Length (fun _ -> 8))
     
     let mutable counter = n
     while counter > 0 do
@@ -52,4 +48,4 @@ let lanternFishExponentialGrowth n =
         
 // lanternFishExponentialGrowth (buffer @"./Day6/actualInput.txt")
 // lanternFishExponentialGrowth (buffer @"./Day6/exampleInput.txt")
-lanternFishExponentialGrowth 255
+let x = lanternFishExponentialGrowth 256 |> Array.length

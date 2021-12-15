@@ -27,14 +27,14 @@ let lanternFishExponentialGrowth () =
     let mutable dict = Dictionary<int, int>()
             
     for i in 0..stateTrack.Length - 1 do
-        dict.Add(i, stateTrack.[i]) |> ignore
+        dict.Add(i, stateTrack.[i])
             
-    printfn $"{dict.Values}"
     for i in 0..79 do
         for ob in dict do
             dict.[ob.Key] <- state ob.Value
             if dict.[ob.Key] = 0 then do
-                dict.Add(dict.Count + 1, 8)
+                printfn $"Hello from inside"
+//                dict.Add(dict.Count + 1, 8)
     
     dict.Count
     

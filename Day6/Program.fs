@@ -23,7 +23,7 @@ let state (internalTimer: int,age: Age) =
     
 
 let lanternFishExponentialGrowth n =
-    let mutable stateTrack = buffer @"/home/pk/Repos/AdventOfCode2021/Day6/exampleInput.txt"
+    let mutable stateTrack = buffer @"./Day6/exampleInput.txt"
     
     let growth currentState (newState: (int * Age)[]) =
         let zeros = currentState |> Array.filter (fun (x: int,_) -> x = 0)
@@ -31,7 +31,7 @@ let lanternFishExponentialGrowth n =
     
     let mutable counter = n
     while counter > 0 do
-        printfn $"{counter}"
+        printfn $"counter: {counter} -- length: {stateTrack.Length}"
         stateTrack <- growth stateTrack (stateTrack |> Array.map state)
         counter <- counter - 1
 //        match counter with

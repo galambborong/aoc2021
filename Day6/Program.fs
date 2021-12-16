@@ -20,12 +20,8 @@ let state (internalTimer: int) =
     | 0 -> 6
     | _ -> internalTimer - 1
     
-    
-let countZeros (dict: Dictionary<int, int>) =
-    dict.Values
-
 let lanternFishExponentialGrowth () =
-    let stateTrack = buffer @"/home/pk/Repos/AdventOfCode2021/Day6/exampleInput.txt"
+    let stateTrack = buffer @"c:/dev/aoc2021/Day6/exampleInput.txt"
    
     let mutable dict = Dictionary<int, int>()
     let mutable inter = Dictionary<int,int>()
@@ -33,11 +29,12 @@ let lanternFishExponentialGrowth () =
     for i in 0..stateTrack.Length - 1 do
         dict.Add(i, stateTrack.[i])
             
-    for i in 0..79 do
+    for i in 0..255 do
+        printfn $"{i}"
         for ob in dict do
-            dict.[ob.Key] <- state ob.Value
             if dict.[ob.Key] = 0 then do
                 inter.[dict.Count + inter.Count] <- 8
+            dict.[ob.Key] <- state ob.Value
             
         for ob in inter do
             dict[ob.Key] <- ob.Value
@@ -46,4 +43,4 @@ let lanternFishExponentialGrowth () =
     
     dict.Count
 
-//lanternFishExponentialGrowth()
+// lanternFishExponentialGrowth()

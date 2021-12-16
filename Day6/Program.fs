@@ -19,28 +19,47 @@ let state (internalTimer: int) =
     match internalTimer with
     | 0 -> 6
     | _ -> internalTimer - 1
-    
+
 let lanternFishExponentialGrowth () =
-    let stateTrack = buffer @"c:/dev/aoc2021/Day6/exampleInput.txt"
-   
-    let mutable dict = Dictionary<int, int>()
-    let mutable inter = Dictionary<int,int>()
-            
-    for i in 0..stateTrack.Length - 1 do
-        dict.Add(i, stateTrack.[i])
-            
-    for i in 0..255 do
-        printfn $"{i}"
-        for ob in dict do
-            if dict.[ob.Key] = 0 then do
-                inter.[dict.Count + inter.Count] <- 8
-            dict.[ob.Key] <- state ob.Value
-            
-        for ob in inter do
-            dict[ob.Key] <- ob.Value
-            
-        inter.Clear()
-    
-    dict.Count
+    let stateTrack =
+        buffer @"c:/dev/aoc2021/Day6/exampleInput.txt"
+
+    let lanternFishes = Dictionary<int, int>()
+
+    let addFishInternalTimerKey () =
+        [ 0 .. 8 ]
+        |> List.iter (fun x -> lanternFishes.Add(x, 0))
+
+    let initialiseFishCountsFromInput () =
+        stateTrack
+        |> List.iter (fun i -> lanternFishes.[i] <- lanternFishes.[i] + 1)
+
+    addFishInternalTimerKey ()
+    initialiseFishCountsFromInput ()
+
+    let countFishesOverNDays n =
+        [ 0 .. n ]
+        |> List.iter
+            (fun _ ->
+                for fishAge in lanternFishes do
+                    printfn $"current Key {fishAge.Key}"
+                    match fishAge.Key with
+                    | 0 ->
+                        match lanternFishes.[0] with
+                        | 0 -> lanternFishes.[0]
+                        | _ -> 
+                                lanternFishes.[0] <- lanternFishes.[0] - 1
+                                lanternFishes.[8] <- lanternFishes.[8] + 1
+                    | key when key > 0 ->
+                        let currentKey = fishAge.Key
+                        lanternFishes.[currentKey] <- lanternFishes.[currentKey] - 1
+                        lanternFishes.[currentKey - 1] <- lanternFishes.[currentKey - 1] + 1
+                    | _ -> failwith "edge case?")
+
+    countFishesOverNDays 1 |> ignore
+
+    lanternFishes //.Values //|> Seq.sum
+
+
 
 // lanternFishExponentialGrowth()

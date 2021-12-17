@@ -33,32 +33,43 @@ let lanternFishExponentialGrowth () =
     let initialiseFishCountsFromInput () =
         stateTrack
         |> List.iter (fun i -> lanternFishes.[i] <- lanternFishes.[i] + 1)
+        
+    let initialiseMockFishCounts () =
+        lanternFishes.[3] <- 1
+        lanternFishes.[5] <- 2
 
     addFishInternalTimerKey ()
     initialiseFishCountsFromInput ()
+//    initialiseMockFishCounts ()
 
     let countFishesOverNDays n =
         [ 0 .. n ]
         |> List.iter
             (fun _ ->
+                printfn $"\n"
                 for fishAge in lanternFishes do
-                    printfn $"current Key {fishAge.Key}"
+                    printfn $"current Key {fishAge.Key}, current value {fishAge.Value}"
+
                     match fishAge.Key with
                     | 0 ->
                         match lanternFishes.[0] with
-                        | 0 -> lanternFishes.[0]
-                        | _ -> 
-                                lanternFishes.[0] <- lanternFishes.[0] - 1
-                                lanternFishes.[8] <- lanternFishes.[8] + 1
-                    | key when key > 0 ->
-                        let currentKey = fishAge.Key
-                        lanternFishes.[currentKey] <- lanternFishes.[currentKey] - 1
-                        lanternFishes.[currentKey - 1] <- lanternFishes.[currentKey - 1] + 1
-                    | _ -> failwith "edge case?")
+                        | 0 -> lanternFishes.[0] <- 0
+                        | x when x > 0 ->
+                                          lanternFishes.[8] <- lanternFishes.[0] 
+                                          lanternFishes.[6] <- lanternFishes.[0]
+                                          lanternFishes.[0] <- 0
+                        | _ -> failwith "lanternFishes.[0] edge"
+                    | _ ->
+                        match lanternFishes.[fishAge.Key] with
+                        | 0 -> lanternFishes.[fishAge.Key] <- 0
+                        | x when x > 0 ->
+                                          lanternFishes.[fishAge.Key - 1] <- lanternFishes.[fishAge.Key]
+                                          lanternFishes.[fishAge.Key] <- 0
+                        | _ -> failwith "lanternFishes.[fishAge.Key] edge")
 
-    countFishesOverNDays 1 |> ignore
+    countFishesOverNDays 2
 
-    lanternFishes //.Values //|> Seq.sum
+    lanternFishes.Values |> Seq.sum
 
 
 

@@ -22,7 +22,7 @@ let state (internalTimer: int) =
 
 let lanternFishExponentialGrowth () =
     let stateTrack =
-        buffer @"/home/pk/Repos/AdventOfCode2021/Day6/actualInput.txt"
+        buffer @"./Day6/actualInput.txt"
 
     let lanternFishes = Dictionary<int, uint64>()
 
@@ -60,10 +60,8 @@ let lanternFishExponentialGrowth () =
         [ 0 .. n ]
         |> List.iter
             (fun _ ->
-                printfn $"\n"
 
                 for fishAge in lanternFishes do
-                    printfn $"current Key {fishAge.Key}, current value {fishAge.Value}"
 
                     match fishAge.Key with
                     | 0 ->
@@ -75,25 +73,12 @@ let lanternFishExponentialGrowth () =
                         | _ -> failwith "lanternFishes.[0] edge"
                     | 7 ->
                         match lanternFishes.[7] with
-//                        | 0 -> lanternFishes.[7] <- 0
                         | x when x >= 0UL ->
                             lanternFishes.[6] <- lanternFishes.[7] + lanternFishes.[9]
                             lanternFishes.[7] <- lanternFishes.[8]
                             lanternFishes.[8] <- lanternFishes.[9]
                             lanternFishes.[9] <- 0UL
                         | _ -> failwith "lanternFishes.[7] edge"
-//                    | 8 ->
-//                        match lanternFishes.[8] with
-//                        | 0 -> lanternFishes.[8] <- 0
-//                        | _ -> lanternFishes.[7] <- lanternFishes.[8]
-//                    | 9 ->
-//                        match lanternFishes.[9] with
-//                        | 0 -> lanternFishes.[9] <- lanternFishes.[0]
-//                        | x when x > 0 ->
-//                            lanternFishes.[8] <- lanternFishes.[9]
-//                            lanternFishes.[6] <- lanternFishes.[9]
-//                            lanternFishes.[9] <- 0
-//                        | _ -> failwith "lanternFishes.[9] edge"
                     | x when x > 0 && x < 7 ->
                         match lanternFishes.[fishAge.Key] with
                         | 0UL -> lanternFishes.[fishAge.Key] <- 0UL
@@ -107,10 +92,8 @@ let lanternFishExponentialGrowth () =
     countFishesOverNDays 255
 
     lanternFishes.Remove(9) |> ignore
-
-    lanternFishes.Values |> Seq.iter (fun x -> printfn $"{x}")
     
     lanternFishes.Values |> Seq.sum
 
 
-lanternFishExponentialGrowth () 
+// lanternFishExponentialGrowth () 

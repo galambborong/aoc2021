@@ -22,39 +22,39 @@ let state (internalTimer: int) =
 
 let lanternFishExponentialGrowth () =
     let stateTrack =
-        buffer @"/home/pk/Repos/AdventOfCode2021/Day6/exampleInput.txt"
+        buffer @"/home/pk/Repos/AdventOfCode2021/Day6/actualInput.txt"
 
-    let lanternFishes = Dictionary<int, int>()
+    let lanternFishes = Dictionary<int, uint64>()
 
     let addFishInternalTimerKey () =
         [ 0 .. 9 ]
-        |> List.iter (fun x -> lanternFishes.Add(x, 0))
+        |> List.iter (fun x -> lanternFishes.Add(x, 0UL))
 
     let initialiseFishCountsFromInput () =
         stateTrack
-        |> List.iter (fun i -> lanternFishes.[i] <- lanternFishes.[i] + 1)
+        |> List.iter (fun i -> lanternFishes.[i] <- lanternFishes.[i] + 1UL)
 
     let initialiseMockFishCounts () =
-        lanternFishes.[3] <- 1
-        lanternFishes.[5] <- 2
+        lanternFishes.[3] <- 1UL
+        lanternFishes.[5] <- 2UL
         
     let initialiseSpecificTests () =
-        lanternFishes.[0] <- 2
-        lanternFishes.[1] <- 1
-        lanternFishes.[2] <- 0
-        lanternFishes.[3] <- 0
-        lanternFishes.[4] <- 0
-        lanternFishes.[5] <- 1
-        lanternFishes.[6] <- 1
-        lanternFishes.[7] <- 1
-        lanternFishes.[8] <- 1
-        lanternFishes.[9] <- 2
+        lanternFishes.[0] <- 2UL
+        lanternFishes.[1] <- 1UL
+        lanternFishes.[2] <- 0UL
+        lanternFishes.[3] <- 0UL
+        lanternFishes.[4] <- 0UL
+        lanternFishes.[5] <- 1UL
+        lanternFishes.[6] <- 1UL
+        lanternFishes.[7] <- 1UL
+        lanternFishes.[8] <- 1UL
+        lanternFishes.[9] <- 2UL
 
     addFishInternalTimerKey ()
     initialiseFishCountsFromInput ()
 //    initialiseMockFishCounts ()
     
-    initialiseSpecificTests ()
+//    initialiseSpecificTests ()
 
     let countFishesOverNDays n =
         [ 0 .. n ]
@@ -68,24 +68,24 @@ let lanternFishExponentialGrowth () =
                     match fishAge.Key with
                     | 0 ->
                         match lanternFishes.[0] with
-                        | 0 -> lanternFishes.[0] <- 0
-                        | x when x > 0 ->
+                        | 0UL -> lanternFishes.[0] <- 0UL
+                        | x when x > 0UL ->
                             lanternFishes.[9] <- lanternFishes.[0]
-                            lanternFishes.[0] <- 0
+                            lanternFishes.[0] <- 0UL
                         | _ -> failwith "lanternFishes.[0] edge"
                     | 7 ->
                         match lanternFishes.[7] with
-                        | 0 -> lanternFishes.[7] <- 0
-                        | x when x > 0 ->
+//                        | 0 -> lanternFishes.[7] <- 0
+                        | x when x >= 0UL ->
                             lanternFishes.[6] <- lanternFishes.[7] + lanternFishes.[9]
                             lanternFishes.[7] <- lanternFishes.[8]
                             lanternFishes.[8] <- lanternFishes.[9]
-//                            lanternFishes.[9] <- 0
+                            lanternFishes.[9] <- 0UL
                         | _ -> failwith "lanternFishes.[7] edge"
 //                    | 8 ->
 //                        match lanternFishes.[8] with
 //                        | 0 -> lanternFishes.[8] <- 0
-//                        | _ -> lanternFishes.[8] <- lanternFishes.[8]
+//                        | _ -> lanternFishes.[7] <- lanternFishes.[8]
 //                    | 9 ->
 //                        match lanternFishes.[9] with
 //                        | 0 -> lanternFishes.[9] <- lanternFishes.[0]
@@ -96,15 +96,15 @@ let lanternFishExponentialGrowth () =
 //                        | _ -> failwith "lanternFishes.[9] edge"
                     | x when x > 0 && x < 7 ->
                         match lanternFishes.[fishAge.Key] with
-                        | 0 -> lanternFishes.[fishAge.Key] <- 0
-                        | x when x > 0 ->
+                        | 0UL -> lanternFishes.[fishAge.Key] <- 0UL
+                        | x when x > 0UL ->
                             lanternFishes.[fishAge.Key - 1] <- lanternFishes.[fishAge.Key]
-                            lanternFishes.[fishAge.Key] <- 0
+                            lanternFishes.[fishAge.Key] <- 0UL
                         | _ -> failwith "lanternFishes.[fishAge.Key] edge"
                     | x when x > 7 -> lanternFishes.[x] <- lanternFishes.[x]
                     | _ -> failwith "outer lanternFishes unhandled")
 
-    countFishesOverNDays 17
+    countFishesOverNDays 255
 
     lanternFishes.Remove(9) |> ignore
 

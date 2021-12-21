@@ -31,9 +31,7 @@ let lanternFishExponentialGrowth () =
         [ 0 .. n ]
         |> List.iter
             (fun _ ->
-
                 for fishAge in lanternFishes do
-
                     match fishAge.Key with
                     | 0 ->
                         match lanternFishes.[0] with

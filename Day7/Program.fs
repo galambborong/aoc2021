@@ -14,7 +14,7 @@ let minPosition = horizontalPositions |> List.min
 
 let maxPosition = horizontalPositions |> List.max
 
-let differences () =
+let bestDifference () =
     [ 0 .. maxPosition ]
     |> List.map
         (fun n ->
@@ -23,4 +23,4 @@ let differences () =
             |> List.sum)
     |> List.min
     
-// differences ()
+// bestDifference ()

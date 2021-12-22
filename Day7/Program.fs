@@ -8,13 +8,11 @@ let buffer filename =
     |> (fun (line: string) -> Seq.toList (line.Split ','))
     |> List.map int
 
-let horizontalPositions = buffer @"./Day7/actualInput.txt"
+let example = buffer @"./Day7/exampleInput.txt"
+let actual = buffer @"./Day7/actualInput.txt"
 
-let minPosition = horizontalPositions |> List.min
-
-let maxPosition = horizontalPositions |> List.max
-
-let bestDifference () =
+let bestDifference horizontalPositions =
+    let maxPosition = horizontalPositions |> List.max
     [ 0 .. maxPosition ]
     |> List.map
         (fun n ->
@@ -23,4 +21,5 @@ let bestDifference () =
             |> List.sum)
     |> List.min
     
-// bestDifference ()
+// bestDifference example
+// bestDifference actual

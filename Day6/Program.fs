@@ -31,30 +31,19 @@ let lanternFishExponentialGrowth n =
                 for fishAge in lanternFishes do
                     match fishAge.Key with
                     | 0 ->
-                        match lanternFishes.[0] with
-                        | 0UL -> lanternFishes.[0] <- 0UL
-                        | x when x > 0UL ->
-                            lanternFishes.[9] <- lanternFishes.[0]
-                            lanternFishes.[0] <- 0UL
-                        | _ -> failwith "lanternFishes.[0] edge"
+                        lanternFishes.[9] <- lanternFishes.[0]
+                        lanternFishes.[0] <- 0UL
                     | x when x > 0 && x < 7 ->
-                        match lanternFishes.[fishAge.Key] with
-                        | 0UL -> lanternFishes.[fishAge.Key] <- 0UL
-                        | x when x > 0UL ->
-                            lanternFishes.[fishAge.Key - 1] <- lanternFishes.[fishAge.Key]
-                            lanternFishes.[fishAge.Key] <- 0UL
-                        | _ -> failwith "lanternFishes.[fishAge.Key] edge"
+                        lanternFishes.[fishAge.Key - 1] <- lanternFishes.[fishAge.Key]
+                        lanternFishes.[fishAge.Key] <- 0UL
                     | 7 ->
-                        match lanternFishes.[7] with
-                        | x when x >= 0UL ->
-                            lanternFishes.[6] <- lanternFishes.[7] + lanternFishes.[9]
-                            lanternFishes.[7] <- lanternFishes.[8]
-                            lanternFishes.[8] <- lanternFishes.[9]
-                            lanternFishes.[9] <- 0UL
-                        | _ -> failwith "lanternFishes.[7] edge"
+                        lanternFishes.[6] <- lanternFishes.[7] + lanternFishes.[9]
+                        lanternFishes.[7] <- lanternFishes.[8]
+                        lanternFishes.[8] <- lanternFishes.[9]
+                        lanternFishes.[9] <- 0UL
                     | x when x > 7 -> lanternFishes.[x] <- lanternFishes.[x]
                     | _ -> failwith "outer lanternFishes unhandled")
-            
+
     addFishInternalTimerKeys ()
 
     initialiseFishCountsFromInput ()

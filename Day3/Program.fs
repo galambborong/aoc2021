@@ -71,15 +71,15 @@ let rec filterByCharAtIndex binaryInputs index rate =
 
 let produceNumberFromBinary (binaryInput: seq<string>) rateType =
     let len =
-        binaryInput |> Seq.head |> String.length |> (+) -1
+        (binaryInput |> Seq.head |> String.length) - 1
 
-    let inputsGreaterThanOne =
+    let inputIsGreaterThanOne =
         let length = binaryInput |> Seq.length
         length > 1
 
     let binaryString =
 
-        match inputsGreaterThanOne with
+        match inputIsGreaterThanOne with
         | false -> binaryInput
         | true ->
             seq {

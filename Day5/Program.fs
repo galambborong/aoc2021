@@ -52,14 +52,11 @@ let completeRanges (xs: int list, ys: int list) =
     createList ys |> List.zip (createList xs)
 
 let linesToProcess =
-    let tuples =
-        buffer
-        |> List.map (
-            turnLineIntoStarAndEndCoordinates
-            >> turnIntoTuples
-        )
-
-    tuples
+    buffer
+    |> List.map (
+        turnLineIntoStarAndEndCoordinates
+        >> turnIntoTuples
+    )
     |> List.map List.unzip
     |> List.collect completeRanges
 

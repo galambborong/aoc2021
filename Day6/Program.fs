@@ -11,24 +11,21 @@ let buffer file =
     |> List.filter Char.IsNumber
     |> List.map (string >> int)
 
-let lanternFishExponentialGrowth () =
-    let stateTrack = buffer @"./Day6/actualInput.txt"
+let lanternFishExponentialGrowth n =
+    let initialFishes = buffer @"./Day6/actualInput.txt"
 
     let lanternFishes = Dictionary<int, uint64>()
 
-    let addFishInternalTimerKey () =
+    let addFishInternalTimerKeys () =
         [ 0 .. 9 ]
         |> List.iter (fun x -> lanternFishes.Add(x, 0UL))
 
     let initialiseFishCountsFromInput () =
-        stateTrack
+        initialFishes
         |> List.iter (fun i -> lanternFishes.[i] <- lanternFishes.[i] + 1UL)
 
-    addFishInternalTimerKey ()
-    initialiseFishCountsFromInput ()
-
-    let countFishesOverNDays n =
-        [ 0 .. n ]
+    let countFishesOverNDays () =
+        [ 0 .. (n - 1) ]
         |> List.iter
             (fun _ ->
                 for fishAge in lanternFishes do
@@ -57,12 +54,17 @@ let lanternFishExponentialGrowth () =
                         | _ -> failwith "lanternFishes.[7] edge"
                     | x when x > 7 -> lanternFishes.[x] <- lanternFishes.[x]
                     | _ -> failwith "outer lanternFishes unhandled")
+            
+    addFishInternalTimerKeys ()
 
-    countFishesOverNDays 255
+    initialiseFishCountsFromInput ()
+
+    countFishesOverNDays ()
 
     lanternFishes.Remove(9) |> ignore
 
     lanternFishes.Values |> Seq.sum
 
 
-// lanternFishExponentialGrowth ()
+// lanternFishExponentialGrowth 80
+// lanternFishExponentialGrowth 256

@@ -30,8 +30,9 @@ let bestDifference horizontalPositions =
     |> List.map
         (fun n ->
             horizontalPositions
-            |> List.map (fun x -> max x n - min x n)
-            |> List.sum)
+            |> List.map ((fun x -> max x n - min x n) >> (fun x -> test [0..x]))
+            |> List.sum
+            )
     |> List.min
     
 // bestDifference example

@@ -28,8 +28,7 @@ let bestDifference horizontalPositions =
         (fun n ->
             horizontalPositions
             |> List.map (
-                (fun x -> difference x n)
-                >> (fun y -> totalTravel [ 0 .. y ])
+                fun x -> totalTravel [ 0 .. (difference x n) ]
             )
             |> List.sum)
     |> List.min

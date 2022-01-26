@@ -11,29 +11,28 @@ let buffer filename =
 let example = buffer @"./Day7/exampleInput.txt"
 let actual = buffer @"./Day7/actualInput.txt"
 
+let totalTravel travel =
+    let incrementTravelByOne = travel |> List.map ((+) 1)
 
-let inc n = n + 1
-5 - 1
-let myWorkingExample = [0..4] |> List.map (fun x -> if x > 0 then (inc x) else 1) |> List.sum
-
-let test arr =
-    let initialPass =
-        arr
-        |> List.map ((+) 1)
-        
-    (initialPass |> List.sum) - (initialPass |> List.last)
+    (incrementTravelByOne |> List.sum)
+    - (incrementTravelByOne |> List.last)
     
+let difference a b =
+    max a b - min a b
 
 let bestDifference horizontalPositions =
     let maxPosition = horizontalPositions |> List.max
+
     [ 0 .. maxPosition ]
     |> List.map
         (fun n ->
             horizontalPositions
-            |> List.map ((fun x -> max x n - min x n) >> (fun x -> test [0..x]))
-            |> List.sum
+            |> List.map (
+                (fun x -> difference x n)
+                >> (fun y -> totalTravel [ 0 .. y ])
             )
+            |> List.sum)
     |> List.min
-    
+
 // bestDifference example
 // bestDifference actual
